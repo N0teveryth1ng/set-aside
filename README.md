@@ -21,7 +21,9 @@
   </svg>
 </p>
 
-<h1 align="center">Set-Aside</h1>
+<h1 align="center">
+  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="1.7" stroke-linecap="round" style="vertical-align:middle"><rect x="4.5" y="8" width="15" height="11.5" rx="2.6"/><path d="M4.5 12.4h15"/><circle cx="12" cy="12.3" r="2.4" fill="#4F46E5" stroke="none"/></svg>&nbsp;&nbsp;Set-Aside
+</h1>
 
 <p align="center"><b>A calm money dashboard for the self-employed.</b><br/>
 Record money in and money out. Set-Aside shows your Net Position, separates your tax <i>for you</i>, and keeps a clean category breakdown — trendline, not a grid.</p>
@@ -30,17 +32,32 @@ Record money in and money out. Set-Aside shows your Net Position, separates your
 
 ---
 
-## The product, in 55 seconds
+## The workflow
 
-<p align="center"><sub>Full walkthrough: signup via magic link → picking a preset → the dashboard → recording an entry → settings.</sub></p>
+Sign up with a magic link, pick a preset, record money in and out — the ledger does the rest.
 
 <p align="center">
-  <video width="100%" autoplay loop muted playsinline poster="docs/media/poster-hero.png">
-    <source src="https://media.githubusercontent.com/media/N0teveryth1ng/Set_ASIDE/HEAD/docs/media/set-aside-launch.mp4" type="video/mp4" />
+  <img src="https://raw.githubusercontent.com/N0teveryth1ng/Set_ASIDE/main/docs/media/workflow.svg" alt="Set-Aside workflow: landing → magic-link sign-in → preset → record in & out → Net Position with tax set aside, running on Next.js/Supabase/Prisma with RLS, orchestrated by a main orchestrator that delegates to a coding sub-agent and a read-only marketing sub-agent" width="100%" />
+</p>
+
+- **One number.** Money in, money out, summed into a Net Position you can trust — a trendline, not a grid.
+- **Presets seed your categories.** Freelance, Business, Personal, or Creator, chosen once at sign-up.
+- **The tax is set aside for you.** A share of every positive period is separated at your rate (23% is the common default).
+- **Private by construction.** Supabase Row Level Security guards every owned table; there are no shared documents.
+
+<details><summary>Full walkthrough</summary>
+
+<p align="center"><sub>Signup via magic link → picking a preset → the dashboard → recording an entry → settings.</sub></p>
+
+<p align="center">
+  <video width="100%" autoplay loop muted playsinline>
+    <source src="https://github.com/N0teveryth1ng/Set_ASIDE/releases/download/video-v1/set-aside-launch.mp4" type="video/mp4" />
   </video>
 </p>
 
 <p align="center">▸ Video lives at <code>docs/media/set-aside-launch.mp4</code> (55s, 1080p) · cinematic cut at <code>docs/media/set-aside-premiere.mp4</code> (40s, 1080p60)</p>
+
+</details>
 
 ## Why Set-Aside
 
@@ -169,6 +186,19 @@ npm run dev        # http://localhost:3000
 ```
 
 `npm test` runs the pure `lib/ledger` suite plus live round-trips against Supabase — including middleware session handling through the signed-in redirect path — with a real session cookie carried and the throwaway test user cleaned up afterwards.
+
+### Agents
+
+This repo runs two sub-agents that the main orchestrator delegates to. They live in `.opencode/agents/` and are plain markdown — no runtime, no keys, no scheduled jobs.
+
+| Agent | Access | Job |
+|---|---|---|
+| `coding` | `edit: allow` · `bash: ask` | Builds features, fixes bugs, refactors. Follows `lib/tokens.ts` and ships every dark-mode pair. Proves the change with a build, the tests, and a real browser screenshot. |
+| `marketing` | `edit: deny` · `bash: deny` | Reads Reddit, X, Hacker News, Product Hunt and competitors live, returns the pulse, trend read, positioning, hooks and gaps. Every claim carries a date and a link. |
+
+The marketing agent is **read-only and research-only**. It can reach the repo's own files and the open web, and nothing else — it cannot write, run commands, post, comment, or DM anywhere. Anything it drafts waits on you. It also carries the product's real constraints, so it will not propose a claim the app can't back: Supabase-backed accounts, a flat set-aside rate you choose rather than a tax calculator, and one-time spreadsheet import.
+
+Invoke one directly with `@coding` or `@marketing`.
 
 ## Roadmap
 
